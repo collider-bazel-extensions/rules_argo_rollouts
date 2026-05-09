@@ -49,5 +49,5 @@ register_toolchains(
 )
 
 argo_rollouts_chart = use_extension("//tools:extensions.bzl", "argo_rollouts_chart", dev_dependency = True)
-argo_rollouts_chart.version(version = "2.9.3")
-use_repo(argo_rollouts_chart, "argo_rollouts_chart_2_9_3")
+argo_rollouts_chart.version(version = "2.40.9")
+use_repo(argo_rollouts_chart, "argo_rollouts_chart_2_40_9")
