@@ -1,0 +1,25 @@
+"""Maintainer-only render flow."""
+
+load("@rules_helm//:defs.bzl", "helm_template")
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+# ---- 2.9.3 (app v1.1.1) -----------------------------------------------------
+
+helm_template(
+    name = "render_argo_rollouts_2_9_3",
+    chart = ["@argo_rollouts_chart_2_9_3//:files"],
+    values = ["//config:argo-rollouts-values.yaml"],
+    namespace = "argo-rollouts",
+    release_name = "argo-rollouts",
+)
+
+sh_binary(
+    name = "render_writeback_2_9_3",
+    srcs = ["writeback.sh"],
+    data = [":render_argo_rollouts_2_9_3"],
+    args = [
+        "$(rootpath :render_argo_rollouts_2_9_3)",
+        "private/manifests/argo_rollouts.yaml",
+    ],
+    visibility = ["//visibility:public"],
+)

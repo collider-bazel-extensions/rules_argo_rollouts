@@ -1,0 +1,71 @@
+# Smoke-fixture for rules_argo_rollouts' blue-green smoke.
+#
+# A Rollout (spec.strategy.blueGreen) plus an active Service that
+# the Rollout controller patches to point at the active
+# ReplicaSet's pods. autoPromotionEnabled = true means: as soon
+# as the new RS's pods are Ready, the controller flips the active
+# service's selector from RS-old → RS-new and scales RS-old down
+# (after scaleDownDelaySeconds, default 30s).
+#
+# The smoke applies this manifest, waits for initial Healthy,
+# patches the image, waits for Healthy again, then asserts:
+#   1. status.stableRS changed (new RS promoted)
+#   2. active service's selector now contains the new pod-template-
+#      hash
+#
+# Both checks together prove the value-add of the blueGreen strategy:
+# atomic flip of the active Service from one RS to another.
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bg-smoke
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bg-active
+  namespace: bg-smoke
+spec:
+  selector:
+    app: bg-app
+  ports:
+    - port: 80
+      targetPort: 80
+  type: ClusterIP
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: bg-app
+  namespace: bg-smoke
+spec:
+  replicas: 2
+  strategy:
+    blueGreen:
+      activeService: bg-active
+      autoPromotionEnabled: true
+      # Default 30s — minimum scaleDown wait after promote. Smoke
+      # doesn't wait for the old RS to scale down; we just check
+      # the active service has flipped.
+      scaleDownDelaySeconds: 30
+  selector:
+    matchLabels:
+      app: bg-app
+  template:
+    metadata:
+      labels:
+        app: bg-app
+    spec:
+      containers:
+        - name: app
+          image: nginx:1.25-alpine
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "0"
+              memory: "0"
+            limits:
+              cpu: "100m"
+              memory: "64Mi"

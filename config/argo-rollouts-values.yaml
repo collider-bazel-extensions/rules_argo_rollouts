@@ -1,0 +1,36 @@
+# Render-time values for rules_argo_rollouts' pinned manifest.
+#
+# Smoke-fixture footprint: a single argo-rollouts controller
+# Deployment + 5 cluster-scoped CRDs (Rollout, AnalysisRun,
+# AnalysisTemplate, ClusterAnalysisTemplate, Experiment) + RBAC.
+# Notifications and dashboard are off by default in the smoke;
+# production turns them back on.
+
+controller:
+  replicas: 1
+  resources:
+    limits:
+      cpu: "200m"
+      memory: "128Mi"
+    requests:
+      cpu: "0"
+      memory: "0"
+  # Drop the Prometheus ServiceMonitor — the smoke doesn't have
+  # Prometheus, and the chart's ServiceMonitor template would
+  # reference a CRD that doesn't exist.
+  metrics:
+    enabled: false
+
+notifications:
+  resources:
+    limits:
+      cpu: "100m"
+      memory: "64Mi"
+    requests:
+      cpu: "0"
+      memory: "0"
+
+# UI dashboard off — separate Deployment + Service. Production
+# typically pivots to OIDC-authenticated dashboard via Ingress.
+dashboard:
+  enabled: false
