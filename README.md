@@ -60,8 +60,10 @@ runs. Validated on Linux x86\_64 in CI.
 ## Installation
 
 ```python
-bazel_dep(name = "rules_argo_rollouts", version = "0.1.0")
+bazel_dep(name = "rules_argo_rollouts", version = "0.1.1")
 ```
+
+The release archive (the tag tarball) leaves out `tests/` and `tools/`, whose packages load dev-only modules, so `bazel query @rules_argo_rollouts//...` works for consumers (since v0.1.1). A `git_override` clone still contains them; name packages instead (for example `@rules_argo_rollouts//:all`).
 
 Bzlmod-only. Transitively pulls in `rules_kubectl` ≥ 0.2.0.
 
