@@ -216,3 +216,11 @@ See `tests/fixtures/rollout.yaml` for the full smoke fixture.
 - Experiment smoke (`Experiment` CR — parallel preview Rollouts
   for A/B testing).
 - Notifications smoke (Slack / webhook on Rollout state changes).
+
+---
+
+## Requesting a new rules package
+
+Want Bazel rules for another tool or service?
+[Request a rules package](https://github.com/collider-bazel-extensions/.github/issues/new?template=request-a-rules-package.yml).
+The [organization page](https://github.com/collider-bazel-extensions) lists every package.
